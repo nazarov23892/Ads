@@ -2,6 +2,7 @@
 using Ads.Web.Entities;
 using Ads.Web.Services.AdService.Concrete.Queries;
 using Ads.Web.Services.AdService.DTOs;
+using System.ComponentModel.DataAnnotations;
 
 namespace Ads.Web.Services.AdService.Concrete
 {
@@ -9,10 +10,30 @@ namespace Ads.Web.Services.AdService.Concrete
     {
         private readonly AdDbContext _efDbContext;
         private const int PageSize = 10;
+        private List<ValidationResult> _validationProblems = new List<ValidationResult>();
 
         public AdService(AdDbContext efDbContext)
         {
             _efDbContext = efDbContext;
+        }
+
+        public bool HasValidationProblems
+        {
+            get => _validationProblems.Any();
+        }
+
+        public IDictionary<string, string[]> ValidationProblems
+        {
+            get => _validationProblems
+               .SelectMany(
+                   collectionSelector: l => l.MemberNames,
+                   resultSelector: (errorMessage, memberName) => new { errorMessage = errorMessage.ErrorMessage ?? string.Empty, memberName })
+               .GroupBy(
+                   keySelector: e => e.errorMessage,
+                   elementSelector: e => e.memberName)
+               .ToDictionary(
+                    keySelector: g => g.Key,
+                    elementSelector: g => g.ToArray());
         }
 
         public GetAdsResponseDto GetAds(GetAdsRequestDto? adsRequestDto)
@@ -60,6 +81,25 @@ namespace Ads.Web.Services.AdService.Concrete
             _efDbContext.Ads.Add(newAd);
             _efDbContext.SaveChanges();
             return new CreateAdResponseDto { Id = newAd.AdId };
+        }
+
+        private bool ValidateObject(object instance)
+        {
+            var results = new List<ValidationResult>();
+            var context = new ValidationContext(
+                instance: instance,
+                serviceProvider: null,
+                items: null);
+            bool res = Validator.TryValidateObject(
+                instance: instance,
+                validationContext: context,
+                validationResults: results,
+                validateAllProperties: true);
+            if (results.Any())
+            {
+                _validationProblems.AddRange(results);
+            }
+            return res;
         }
     }
 }

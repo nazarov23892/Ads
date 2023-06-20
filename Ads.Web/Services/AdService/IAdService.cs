@@ -6,5 +6,7 @@ namespace Ads.Web.Services.AdService
     {
         GetAdsResponseDto GetAds(GetAdsRequestDto? adsRequestDto);
         CreateAdResponseDto? CreateAd(CreateAdRequestDto createAdRequestDto);
+        bool HasValidationProblems { get; }
+        IDictionary<string, string[]> ValidationProblems { get; }
     }
 }
