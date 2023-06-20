@@ -35,6 +35,21 @@ namespace Ads.Web
                {
                    return Results.Ok(adService.GetAds(getAdsRequest));
                });
+            app.MapGet(
+                pattern: "/api/ads/{id}",
+                handler: (int id, IAdService adService) =>
+                {
+                    var response = adService.GetAdItem(id);
+                    if (adService.HasValidationProblems)
+                    {
+                        return Results.ValidationProblem(adService.ValidationProblems);
+                    }
+                    if (response == null)
+                    {
+                        return Results.NotFound();
+                    }
+                    return Results.Ok(response);
+                });
             app.MapPost(
                pattern: "/api/ads",
                handler: ([FromBody] CreateAdRequestDto? createRequest, IAdService adService) =>

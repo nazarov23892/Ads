@@ -49,7 +49,10 @@ namespace Ads.Web.Services.AdService.Concrete
                     Name = a.Name,
                     Price = a.Price,
                     CreatedUtc = a.DateCreatedUtc.ToString(),
-                    ImgUrl = a.ImageUrls.FirstOrDefault(i => i.IsMain).Url
+                    ImgUrl = a.ImageUrls
+                        .Where(i => i.IsMain)
+                        .Select(i => i.Url)
+                        .FirstOrDefault()
                 })
                 .Skip(count: pageStartsZero * PageSize)
                 .Take(count: PageSize);
@@ -123,6 +126,21 @@ namespace Ads.Web.Services.AdService.Concrete
                     memberNames: !string.IsNullOrEmpty(memberName)
                         ? new[] { memberName }
                         : null));
+        }
+
+        public GetAdItemResponseDto? GetAdItem(int id)
+        {
+            return _efDbContext.Ads
+                    .Select(a => new GetAdItemResponseDto
+                    {
+                        Id = a.AdId,
+                        Name = a.Name,
+                        CreatedUtc = a.DateCreatedUtc.ToString(),
+                        ImageUrls = a.ImageUrls
+                            .Where(i => i.IsMain)
+                            .Select(i => i.Url)
+                    })
+                    .SingleOrDefault(a => a.Id == id);
         }
     }
 }
