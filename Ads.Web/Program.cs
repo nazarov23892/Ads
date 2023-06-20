@@ -33,13 +33,22 @@ namespace Ads.Web
                pattern: "/api/ads",
                handler: ([FromBody] GetAdsRequestDto? getAdsRequest, IAdService adService) =>
                {
-                   return adService.GetAds(getAdsRequest);
+                   return Results.Ok(adService.GetAds(getAdsRequest));
                });
             app.MapPost(
                pattern: "/api/ads",
-               handler: ([FromBody] CreateAdRequestDto createRequest, IAdService adService) =>
+               handler: ([FromBody] CreateAdRequestDto? createRequest, IAdService adService) =>
                {
-                   return adService.CreateAd(createRequest);
+                   if (createRequest == null)
+                   {
+                       return Results.BadRequest(error: new { error = "empty or ivalid request param value" });
+                   }
+                   var responseDto = adService.CreateAd(createRequest);
+                   if (adService.HasValidationProblems)
+                   {
+                       return Results.ValidationProblem(adService.ValidationProblems);
+                   }
+                   return Results.Ok(responseDto);
                });
 
             app.Run();

@@ -64,6 +64,10 @@ namespace Ads.Web.Services.AdService.Concrete
 
         public CreateAdResponseDto? CreateAd(CreateAdRequestDto createAdRequestDto)
         {
+            if (!ValidateObject(createAdRequestDto))
+            {
+                return null;
+            }
             Ad newAd = new Ad
             {
                 DateCreatedUtc = DateTime.UtcNow,
@@ -77,7 +81,7 @@ namespace Ads.Web.Services.AdService.Concrete
                         IsMain = i == 0
                     })
                     .ToList()
-                };
+            };
             _efDbContext.Ads.Add(newAd);
             _efDbContext.SaveChanges();
             return new CreateAdResponseDto { Id = newAd.AdId };
