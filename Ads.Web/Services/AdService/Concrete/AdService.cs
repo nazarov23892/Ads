@@ -1,4 +1,5 @@
 ﻿using Ads.Web.DataContexts;
+using Ads.Web.Entities;
 using Ads.Web.Services.AdService.Concrete.Queries;
 using Ads.Web.Services.AdService.DTOs;
 
@@ -38,6 +39,27 @@ namespace Ads.Web.Services.AdService.Concrete
                 Items = query
                     .ToList()
             };
+        }
+
+        public CreateAdResponseDto? CreateAd(CreateAdRequestDto createAdRequestDto)
+        {
+            Ad newAd = new Ad
+            {
+                DateCreatedUtc = DateTime.UtcNow,
+                Name = createAdRequestDto.Name ?? string.Empty,
+                Description = createAdRequestDto.Description,
+                Price = createAdRequestDto.Price,
+                ImageUrls = createAdRequestDto.ImageUrls
+                    .Select((s, i) => new ImageUrl
+                    {
+                        Url = s,
+                        IsMain = i == 0
+                    })
+                    .ToList()
+                };
+            _efDbContext.Ads.Add(newAd);
+            _efDbContext.SaveChanges();
+            return new CreateAdResponseDto { Id = newAd.AdId };
         }
     }
 }

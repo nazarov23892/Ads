@@ -5,5 +5,6 @@ namespace Ads.Web.Services.AdService
     public interface IAdService
     {
         GetAdsResponseDto GetAds(GetAdsRequestDto? adsRequestDto);
+        CreateAdResponseDto? CreateAd(CreateAdRequestDto createAdRequestDto);
     }
 }

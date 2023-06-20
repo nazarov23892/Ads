@@ -35,6 +35,12 @@ namespace Ads.Web
                {
                    return adService.GetAds(getAdsRequest);
                });
+            app.MapPost(
+               pattern: "/api/ads",
+               handler: ([FromBody] CreateAdRequestDto createRequest, IAdService adService) =>
+               {
+                   return adService.CreateAd(createRequest);
+               });
 
             app.Run();
         }
