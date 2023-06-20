@@ -23,7 +23,8 @@ namespace Ads.Web.Services.AdService.Concrete
                     Id = a.AdId,
                     Name = a.Name,
                     Price = a.Price,
-                    CreatedUtc = a.DateCreatedUtc.ToString()
+                    CreatedUtc = a.DateCreatedUtc.ToString(),
+                    ImgUrl = a.ImageUrls.FirstOrDefault(i => i.IsMain).Url
                 })
                 .Skip(count: pageStartsZero * PageSize)
                 .Take(count: PageSize);
