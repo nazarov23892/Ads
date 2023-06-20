@@ -1,4 +1,5 @@
 ﻿using Ads.Web.DataContexts;
+using Ads.Web.Services.AdService.Concrete.Queries;
 using Ads.Web.Services.AdService.DTOs;
 
 namespace Ads.Web.Services.AdService.Concrete
@@ -17,7 +18,9 @@ namespace Ads.Web.Services.AdService.Concrete
         {
             int pageStartsZero = adsRequestDto?.Page - 1 ?? 0;
             var query = _efDbContext.Ads
-                .OrderBy(a => a.AdId)
+                .SortAdBy(
+                    propertyName: adsRequestDto?.SortName,
+                    asc: adsRequestDto?.SortAsc ?? true)
                 .Select(a => new GetAdsResponseItemDto
                 {
                     Id = a.AdId,
