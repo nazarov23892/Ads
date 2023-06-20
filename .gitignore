@@ -361,3 +361,6 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/Ads.Web/ads.db
+/Ads.Web/ads.db-shm
+/Ads.Web/ads.db-wal

@@ -11,6 +11,14 @@ namespace Ads.Web.DataContexts
 
         }
 
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            if (Database.IsSqlite())
+            {
+                modelBuilder.Entity<Ad>().Property(a => a.Price).HasConversion<double>();
+            }
+        }
+
         public DbSet<Ad> Ads { get; set; }
     }
 }

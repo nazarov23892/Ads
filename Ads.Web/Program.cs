@@ -13,19 +13,23 @@ namespace Ads.Web
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+            string connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
             builder.Services.AddDbContext<AdDbContext>(options =>
             {
-                options.UseInMemoryDatabase(databaseName: "ad-db");
+                options.UseSqlite(connectionString);
             });
             builder.Services.AddTransient<IAdService, AdService>();
 
 
             var app = builder.Build();
 
-            using (var scope = app.Services.CreateScope())
+            if (app.Environment.IsDevelopment())
             {
-                var efDbCOntext = scope.ServiceProvider.GetRequiredService<AdDbContext>();
-                SeedTool.SeedData(efDbCOntext);
+                using (var scope = app.Services.CreateScope())
+                {
+                    var efDbCOntext = scope.ServiceProvider.GetRequiredService<AdDbContext>();
+                    SeedTool.SeedData(efDbCOntext);
+                }
             }
 
             app.MapGet("/", () => "Hello World!");
