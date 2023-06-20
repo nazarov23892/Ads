@@ -37,9 +37,9 @@ namespace Ads.Web
                });
             app.MapGet(
                 pattern: "/api/ads/{id}",
-                handler: (int id, IAdService adService) =>
+                handler: (int id, [FromBody] GetAdItemRequestDto? getAdItemRequest, IAdService adService) =>
                 {
-                    var response = adService.GetAdItem(id);
+                    var response = adService.GetAdItem(id, getAdItemRequest);
                     if (adService.HasValidationProblems)
                     {
                         return Results.ValidationProblem(adService.ValidationProblems);

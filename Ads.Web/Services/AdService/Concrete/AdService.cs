@@ -128,17 +128,33 @@ namespace Ads.Web.Services.AdService.Concrete
                         : null));
         }
 
-        public GetAdItemResponseDto? GetAdItem(int id)
+        public GetAdItemResponseDto? GetAdItem(int id, GetAdItemRequestDto? getAdItemRequestDto)
         {
+            if (getAdItemRequestDto != null
+                && !ValidateObject(getAdItemRequestDto))
+            {
+                return null;
+            }
+            bool includeDescription = getAdItemRequestDto?.Fields?.Contains("description") ?? false;
+            bool includeImages = getAdItemRequestDto?.Fields?.Contains("images") ?? false;
+
             return _efDbContext.Ads
                     .Select(a => new GetAdItemResponseDto
                     {
                         Id = a.AdId,
                         Name = a.Name,
+                        Description = includeDescription
+                                ? a.Description
+                                : null,
                         CreatedUtc = a.DateCreatedUtc.ToString(),
-                        ImageUrls = a.ImageUrls
-                            .Where(i => i.IsMain)
-                            .Select(i => i.Url)
+                        ImageUrls = includeImages
+                            ? a.ImageUrls
+                                .OrderByDescending(i => i.IsMain)
+                                .Select(i => i.Url)
+                            : a.ImageUrls
+                                .Where(i => i.IsMain)
+                                .Select(i => i.Url)
+                                .Take(1)
                     })
                     .SingleOrDefault(a => a.Id == id);
         }
