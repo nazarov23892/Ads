@@ -3,6 +3,8 @@ using Ads.Web.Services.AdService.Concrete;
 using Ads.Web.Services.AdService;
 using Microsoft.EntityFrameworkCore;
 using Ads.Web.Data;
+using Microsoft.AspNetCore.Mvc;
+using Ads.Web.Services.AdService.DTOs;
 
 namespace Ads.Web
 {
@@ -29,9 +31,9 @@ namespace Ads.Web
             app.MapGet("/", () => "Hello World!");
             app.MapGet(
                pattern: "/api/ads",
-               handler: (IAdService adService) =>
+               handler: ([FromBody] GetAdsRequestDto? getAdsRequest, IAdService adService) =>
                {
-                   return adService.GetAds();
+                   return adService.GetAds(getAdsRequest);
                });
 
             app.Run();
