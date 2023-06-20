@@ -68,6 +68,15 @@ namespace Ads.Web.Services.AdService.Concrete
             {
                 return null;
             }
+            if (createAdRequestDto.ImageUrls
+                .Where(img => string.IsNullOrEmpty(img))
+                .Any())
+            {
+                AddValidationError(
+                    errorMessage: "images have empty value",
+                    memberName: nameof(createAdRequestDto.ImageUrls));
+                return null;
+            }
             Ad newAd = new Ad
             {
                 DateCreatedUtc = DateTime.UtcNow,
@@ -104,6 +113,16 @@ namespace Ads.Web.Services.AdService.Concrete
                 _validationProblems.AddRange(results);
             }
             return res;
+        }
+
+        private void AddValidationError(string errorMessage, string? memberName = null)
+        {
+            _validationProblems.Add(
+                new ValidationResult(
+                    errorMessage: errorMessage,
+                    memberNames: !string.IsNullOrEmpty(memberName)
+                        ? new[] { memberName }
+                        : null));
         }
     }
 }

@@ -11,6 +11,8 @@ namespace Ads.Web.Services.AdService.DTOs
         [MaxLength(1000)]
         public string? Description { get; set; }
         public decimal Price { get; set; }
+
+        [MaxLength(3)]
         public IEnumerable<string> ImageUrls { get; set; } = Enumerable.Empty<string>();
 
     }
